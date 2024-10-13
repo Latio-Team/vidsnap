@@ -189,7 +189,7 @@
               ></video>
               <div class="flex items-center justify-between gap-4">
                 <h2
-                  :class="user.unsafeMetadata?.group_id === media.group_id ? `text-2xl focus:outline-none hover:bg-gray-200 focus:bg-gray-200 p-4 rounded-xl flex-1` : `text-2xl focus:outline-none p-4 flex-1`"
+                  :class="user?.unsafeMetadata?.group_id === media.group_id ? `text-2xl focus:outline-none hover:bg-gray-200 focus:bg-gray-200 p-4 rounded-xl flex-1` : `text-2xl focus:outline-none p-4 flex-1`"
                   :contenteditable="user.unsafeMetadata?.group_id === media.group_id"
                   x-data="{ title: null }"
                   x-init="$watch('media', () => title = media?.keyvalues?.title ? media?.keyvalues?.title : `Untitled video from ${media?.created_at}`)"
