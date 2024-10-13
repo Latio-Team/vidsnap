@@ -54,10 +54,12 @@ document.addEventListener('alpine:init', () => {
 
         this.mediaRecorder.onstop = () => {
           const blob = new Blob(this.recordedChunks, { type: mimeType });
+          this.isRecording = false;
           resolve(blob);
         };
 
         this.mediaRecorder.onerror = (event) => {
+          this.isRecording = false;
           reject(event.error);
         };
 
@@ -81,9 +83,9 @@ document.addEventListener('alpine:init', () => {
         const req = await fetch(`/api/file`, {
           method: 'PUT',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ id, title })
+          body: JSON.stringify({ id, title }),
         });
         const res = await req.json();
         if (!req.ok) {
@@ -95,8 +97,9 @@ document.addEventListener('alpine:init', () => {
       }
     },
     async deleteMedia(id, $router) {
-      if(!confirm(`Delete this media recording?`)) {
-        return
+      if (!this.user?.id) return;
+      if (!confirm(`Delete this media recording?`)) {
+        return;
       }
       try {
         const req = await fetch(`/api/file`, {
@@ -107,11 +110,23 @@ document.addEventListener('alpine:init', () => {
           body: JSON.stringify({ id }),
         });
         if (!req.ok) {
-          $router.push(`/`)
+          $router.push(`/`);
         }
       } catch (error) {
         console.error(error);
       }
-    }
+    },
   }));
 });
+
+async function initAuth() {
+  await Clerk.load({
+    appearance: {
+      elements: {
+        formButtonPrimary: `bg-gray-300 normal-case text-base !border-2 border-black shadow-flat py-2 px-4 rounded-lg hover:shadow-none transition-shadow duration-200 text-black hover:bg-gray-300`,
+      },
+    },
+  });
+
+  return [Clerk.user, Clerk];
+}
