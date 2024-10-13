@@ -4,7 +4,6 @@ const PINATA_JWT = process.env.PINATA_JWT;
 const BASE_URLS = {
   UPLOADS: 'https://uploads.pinata.cloud/v3/files/',
   API: 'https://api.pinata.cloud/v3/files/',
-  GATEWAY: 'https://green-improved-anteater-31.mypinata.cloud/files',
 };
 
 /**
@@ -34,11 +33,12 @@ const pinataAPI = {
    * @param {File} file - The file to upload
    * @returns {Promise<[any, null]|[null, any]>} A promise that resolves to an array with either [data, null] or [null, error]
    */
-  upload: async (file) => {
+  upload: async (file, group = null) => {
     const formData = new FormData();
     const id = `${randomUUID()}.${file.name.split('.').pop()}`;
     formData.append('file', file, id);
     formData.append('name', id);
+    formData.append('group_id', group);
 
     return makeRequest(
       BASE_URLS.UPLOADS,
@@ -84,27 +84,6 @@ const pinataAPI = {
     makeRequest(new URL(id, BASE_URLS.API), 'DELETE', {
       Authorization: `Bearer ${PINATA_JWT}`,
     }),
-
-  /**
-   * Gets a signed URL for a file
-   * @param {string} cid - The CID of the file
-   * @returns {Promise<[any, null]|[null, any]>} A promise that resolves to an array with either [data, null] or [null, error]
-   */
-  getSignedUrl: (cid) =>
-    makeRequest(
-      new URL('sign', BASE_URLS.API),
-      'POST',
-      {
-        Authorization: `Bearer ${PINATA_JWT}`,
-        'Content-Type': 'application/json',
-      },
-      JSON.stringify({
-        url: `${BASE_URLS.GATEWAY}/${cid}`,
-        expires: 500000,
-        date: Date.now(),
-        method: 'GET',
-      })
-    ),
 };
 
 /**
@@ -125,14 +104,9 @@ export async function GET(req) {
 
   try {
     const [fileData, fileError] = await pinataAPI.getFile(id);
-    if (fileError) return handleError(fileError, 403);
+    if (fileError) return handleError(fileError, 500);
 
-    const [signedUrl, signedUrlError] = await pinataAPI.getSignedUrl(
-      fileData.cid
-    );
-    if (signedUrlError) return handleError(signedUrlError, 403);
-
-    return Response.json({ ...fileData, fileUrl: signedUrl });
+    return Response.json(fileData);
   } catch (error) {
     return handleError(error);
   }
@@ -146,11 +120,12 @@ export async function GET(req) {
 export async function POST(req) {
   const body = await req.formData();
   const file = body.get('file');
+  const group = body.get('group');
 
   if (!file) return Response.json({ message: 'Missing file in request' });
 
   try {
-    const [data, error] = await pinataAPI.upload(file);
+    const [data, error] = await pinataAPI.upload(file, group);
     return error ? handleError(error) : Response.json(data);
   } catch (error) {
     return handleError(error);

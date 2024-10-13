@@ -36,7 +36,11 @@
       type="text/javascript"
     ></script>
   </head>
-  <body x-router x-data="application" @load.window="[user, auth] = await initAuth()">
+  <body
+    x-router
+    x-data="application"
+    @load.window="[user, auth] = await initAuth()"
+  >
     <header class="fixed inset-x-0 top-0 z-10 p-8">
       <div
         class="flex items-center justify-between bg-white max-w-7xl border-2 border-black p-8 rounded-2xl mx-auto gap-4"
@@ -145,13 +149,24 @@
               </button>
             </div>
           </section>
-          <section x-cloak :class="user?.id ? `min-h-screen -mt-20` : `hidden`">
+          <section
+            x-cloak
+            x-data="{ files: [] }"
+            x-init="$watch('user', async () => files = await getFiles())"
+            :class="user?.id && files.length ? `min-h-screen -mt-20` : `hidden`"
+          >
             <div class="max-w-5xl mx-auto">
               <h3 class="text-lg mb-5">Your Recordings</h3>
               <div class="grid grid-cols-3 gap-4">
-                <a x-link :href="`/v/01928511-8ab8-7d7b-9358-beab770d0636`">
-                  <img class="bg-black rounded-xl aspect-video" src="" alt="" />
-                </a>
+                <template x-for="file in files">
+                  <a x-link :href="`/v/${file.id}`">
+                    <video
+                      class="bg-black rounded-xl aspect-video"
+                      :src="`/api/video?cid=${file.cid}`"
+                      paused
+                    ></video>
+                  </a>
+                </template>
               </div>
             </div>
           </section>
@@ -168,14 +183,14 @@
             <div class="max-w-4xl w-full mt-40 flex flex-col gap-4">
               <video
                 class="aspect-video w-full rounded-xl bg-white border-2 border-black shadow-flat-xl"
-                :src="media?.fileUrl"
+                :src="`/api/video?cid=${media?.cid}`"
                 controls
                 paused
               ></video>
               <div class="flex items-center justify-between gap-4">
                 <h2
-                  class="text-2xl focus:outline-none hover:bg-gray-200 focus:bg-gray-200 p-4 rounded-xl flex-1"
-                  contenteditable="true"
+                  :class="user.unsafeMetadata?.group_id === media.group_id ? `text-2xl focus:outline-none hover:bg-gray-200 focus:bg-gray-200 p-4 rounded-xl flex-1` : `text-2xl focus:outline-none p-4 flex-1`"
+                  :contenteditable="user.unsafeMetadata?.group_id === media.group_id"
                   x-data="{ title: null }"
                   x-init="$watch('media', () => title = media?.keyvalues?.title ? media?.keyvalues?.title : `Untitled video from ${media?.created_at}`)"
                   x-text="title"
@@ -194,7 +209,7 @@
                 </button>
                 <button
                   x-cloak
-                  :class="user?.id ? `bg-gray-300 py-2 px-4 rounded-xl border-2 border-black shadow-flat hover:shadow-none transition duration-200 hover:bg-red-200` : `hidden`"
+                  :class="user?.unsafeMetadata?.group_id === media.group_id ? `bg-gray-300 py-2 px-4 rounded-xl border-2 border-black shadow-flat hover:shadow-none transition duration-200 hover:bg-red-200` : `hidden`"
                   @click="deleteMedia($router.params.id, $router)"
                 >
                   Delete

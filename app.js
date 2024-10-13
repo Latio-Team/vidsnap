@@ -25,6 +25,7 @@ document.addEventListener('alpine:init', () => {
         const blob = await this.streamToBlob(this.stream);
         const data = new FormData();
         data.append('file', blob);
+        data.append('group', this.user?.unsafeMetadata?.group_id);
 
         const req = await fetch('/api/file', {
           method: 'POST',
@@ -116,6 +117,17 @@ document.addEventListener('alpine:init', () => {
         console.error(error);
       }
     },
+    async getFiles() {
+      try {
+        const request = await fetch(
+          `/api/files?group=${this.user.unsafeMetadata.group_id}`
+        );
+        const response = await request.json();
+        return response.files;
+      } catch (error) {
+        console.error(error);
+      }
+    },
   }));
 });
 
@@ -127,6 +139,14 @@ async function initAuth() {
       },
     },
   });
+
+  if (Clerk.user) {
+    if (!Clerk.user.unsafeMetadata?.group_id) {
+      const request = await fetch('/api/group');
+      const response = await request.json();
+      Clerk.user.update({ unsafeMetadata: { group_id: response.id } });
+    }
+  }
 
   return [Clerk.user, Clerk];
 }
