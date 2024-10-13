@@ -16,7 +16,7 @@ export async function GET(req) {
       headers: { Authorization: `Bearer ${PINATA_JWT}` },
     };
     const request = await fetch(
-      `https://api.pinata.cloud/v3/files?group_id=${group}`,
+      `https://api.pinata.cloud/v3/files?group=${group}`,
       options
     );
     const response = await request.json();
