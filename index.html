@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://unpkg.com/@fontsource/geist-sans" />
     <script src="https://unpkg.com/alpinejs@3.x.x" defer></script>
     <script src="https://unpkg.com/@shaun/alpinejs-router@1.x.x"></script>
-    <script src="/app.js"></script>
     <style type="text/tailwindcss">
       @layer base {
         body {
@@ -30,8 +29,8 @@
       }
     </style>
   </head>
-  <body x-data="app">
-    <header class="fixed inset-x-0 top-10 z-10">
+  <body x-data="application">
+    <header class="fixed inset-x-0 top-0 z-10 p-8">
       <div
         class="flex items-center justify-between bg-white max-w-7xl border-2 border-black p-8 rounded-2xl mx-auto"
       >
@@ -66,15 +65,26 @@
             class="min-h-screen grid place-items-center bg-gradient-to-b from-blue-200 to-transparent p-8"
           >
             <div class="flex flex-col gap-8 items-center max-w-4xl text-center">
-              <h1 class="text-7xl">Private Effortless Screen Recording App</h1>
+              <h1
+                class="text-7xl"
+                x-text="isRecording ? `We're now recording your screen!` : `Private Effortless Screen Recording App`"
+              >
+                Private Effortless Screen Recording App
+              </h1>
               <button
                 class="py-3 px-6 rounded-xl bg-red-200 text-2xl border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 inline-flex items-center gap-4"
+                @click="startRecording($router)"
               >
                 <i
+                  x-cloak
                   aria-hidden="true"
-                  class="w-3 h-3 rounded-full bg-red-600 animate-pulse block"
+                  :class="isRecording ? `w-3 h-3 rounded-full bg-red-600 animate-pulse block`:`hidden`"
                 ></i>
-                <span>Start Recording</span>
+                <span
+                  x-text="isRecording ? `Stop Recording`: `Start Recording`"
+                >
+                  Start Recording
+                </span>
               </button>
             </div>
           </section>
@@ -91,14 +101,17 @@
         </div>
       </template>
       <template x-route="/v/:id">
-        <div>
+        <div
+          x-data="{ media: null }"
+          x-init="media = await getMedia($router.params.id)"
+        >
           <section
             class="min-h-screen grid place-items-center bg-gradient-to-b from-blue-200 to-transparent p-8"
           >
             <div class="max-w-4xl w-full mt-40 flex flex-col gap-4">
               <video
                 class="aspect-video w-full rounded-xl bg-white border-2 border-black shadow-flat-xl"
-                src=""
+                :src="media?.fileUrl"
                 controls
                 paused
               ></video>
@@ -106,16 +119,25 @@
                 <h2
                   class="text-2xl focus:outline-none hover:bg-gray-200 focus:bg-gray-200 p-4 rounded-xl flex-1"
                   contenteditable="true"
+                  x-data="{ title: null }"
+                  x-init="$watch('media', () => title = media?.keyvalues?.title ? media?.keyvalues?.title : `Untitled video from ${media?.created_at}`)"
+                  x-text="title"
+                  x-ref="title"
+                  @keyup.debounce.1000ms="if (title !== $refs.title.textContent) updateTitle($router.params.id, $refs.title.textContent)"
                 >
                   Untitled video
                 </h2>
                 <button
                   class="bg-gray-300 py-2 px-4 rounded-xl border-2 border-black shadow-flat hover:shadow-none transition duration-200"
+                  x-data="{ copied: false }"
+                  x-text="copied ? `Link copied` : `Share`"
+                  @click="navigator.clipboard.writeText(window.location).then(() => copied = true).finally(() => setTimeout(() => copied = false, 5000))"
                 >
                   Share
                 </button>
                 <button
                   class="bg-gray-300 py-2 px-4 rounded-xl border-2 border-black shadow-flat hover:shadow-none transition duration-200 hover:bg-red-200"
+                  @click="deleteMedia($router.params.id, $router)"
                 >
                   Delete
                 </button>
@@ -214,5 +236,6 @@
         <span>Private Effortless Screen Recording App</span>
       </div>
     </footer>
+    <script src="/app.js"></script>
   </body>
 </html>
