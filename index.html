@@ -182,7 +182,7 @@
           >
             <div class="max-w-4xl w-full mt-40 flex flex-col gap-4">
               <video
-                class="aspect-video w-full rounded-xl bg-white border-2 border-black shadow-flat-xl"
+                class="aspect-video w-full rounded-xl bg-white border-2 border-black shadow-flat-xl object-fit-cover"
                 :src="`/api/video?cid=${media?.cid}`"
                 controls
                 paused
@@ -190,7 +190,7 @@
               <div class="flex items-center justify-between gap-4">
                 <h2
                   :class="user?.unsafeMetadata?.group_id === media.group_id ? `text-2xl focus:outline-none hover:bg-gray-200 focus:bg-gray-200 p-4 rounded-xl flex-1` : `text-2xl focus:outline-none p-4 flex-1`"
-                  :contenteditable="user.unsafeMetadata?.group_id === media.group_id"
+                  :contenteditable="user?.unsafeMetadata?.group_id === media.group_id"
                   x-data="{ title: null }"
                   x-init="$watch('media', () => title = media?.keyvalues?.title ? media?.keyvalues?.title : `Untitled video from ${media?.created_at}`)"
                   x-text="title"

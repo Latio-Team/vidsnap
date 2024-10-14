@@ -25,7 +25,7 @@ document.addEventListener('alpine:init', () => {
         const blob = await this.streamToBlob(this.stream);
         const data = new FormData();
         data.append('file', blob);
-        data.append('group', this.user?.unsafeMetadata?.group_id);
+        data.append('group', this.user?.unsafeMetadata?.group_id ?? '');
 
         const req = await fetch('/api/file', {
           method: 'POST',

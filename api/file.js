@@ -38,7 +38,7 @@ const pinataAPI = {
     const id = `${randomUUID()}.${file.name.split('.').pop()}`;
     formData.append('file', file, id);
     formData.append('name', id);
-    formData.append('group_id', group);
+    if (group) formData.append('group_id', group);
 
     return makeRequest(
       BASE_URLS.UPLOADS,
