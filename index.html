@@ -65,7 +65,7 @@
           </a>
         </div>
         <button
-          :class="`hidden md:block py-2 px-3 rounded-xl bg-red-200 border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 inline-flex items-center gap-4 ${isLoading ? 'cursor-wait' : ''}`"
+          :class="`hidden md:inline-flex py-2 px-3 rounded-xl bg-red-200 border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 items-center gap-2 ${isLoading ? 'cursor-wait' : ''}`"
           @click="startRecording($router)"
           :disabled="isLoading"
         >
