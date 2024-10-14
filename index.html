@@ -43,7 +43,7 @@
   >
     <header class="fixed inset-x-0 top-0 z-10 p-8">
       <div
-        class="flex items-center justify-between bg-white max-w-7xl border-2 border-black p-8 rounded-2xl mx-auto gap-4"
+        class="flex items-center justify-between bg-white max-w-7xl border-2 border-black p-4 md:p-8 rounded-2xl mx-auto gap-4"
       >
         <div class="flex-1">
           <a class="text-xl inline-flex items-center gap-2" x-link href="/">
@@ -65,15 +65,18 @@
           </a>
         </div>
         <button
-          class="py-2 px-3 rounded-xl bg-red-200 border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 inline-flex items-center gap-4"
+          :class="`hidden md:block py-2 px-3 rounded-xl bg-red-200 border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 inline-flex items-center gap-4 ${isLoading ? 'cursor-wait' : ''}`"
           @click="startRecording($router)"
+          :disabled="isLoading"
         >
           <i
             x-cloak
             aria-hidden="true"
             :class="isRecording ? `w-3 h-3 rounded-full bg-red-600 animate-pulse block`:`hidden`"
           ></i>
-          <span x-text="isRecording ? `Stop Recording`: `Start Recording`">
+          <span
+            x-text="isRecording ? `Stop Recording`: isLoading ? `Wait a moment` : `Start Recording`"
+          >
             Start Recording
           </span>
         </button>
@@ -127,7 +130,7 @@
           >
             <div class="flex flex-col gap-8 items-center max-w-4xl text-center">
               <h1
-                class="text-7xl"
+                class="text-5xl lg:text-7xl"
                 x-text="isRecording ? `We're now recording your screen!` : isLoading ? `We're preparing your recording` : `Private Effortless Screen Recording App`"
               >
                 Private Effortless Screen Recording App
@@ -135,6 +138,7 @@
               <button
                 :class="`py-3 px-6 rounded-xl bg-red-200 text-2xl border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 inline-flex items-center gap-4 ${isLoading ? 'cursor-wait' : ''}`"
                 @click="startRecording($router)"
+                :disabled="isLoading"
               >
                 <i
                   x-cloak
@@ -155,9 +159,9 @@
             x-init="$watch('user', async () => files = await getFiles())"
             :class="user?.id && files.length ? `min-h-screen -mt-20` : `hidden`"
           >
-            <div class="max-w-5xl mx-auto">
+            <div class="max-w-5xl mx-auto p-4">
               <h3 class="text-lg mb-5">Your Recordings</h3>
-              <div class="grid grid-cols-3 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <template x-for="file in files">
                   <a x-link :href="`/v/${file.id}`">
                     <video
@@ -165,7 +169,9 @@
                       :src="`/api/video?cid=${file.cid}`"
                       paused
                     ></video>
-                    <span x-text="file?.keyvalues?.title ? file?.keyvalues?.title : `Untitled video from ${file?.created_at}`"></span>
+                    <span
+                      x-text="file?.keyvalues?.title ? file?.keyvalues?.title : `Untitled video from ${file?.created_at}`"
+                    ></span>
                   </a>
                 </template>
               </div>
@@ -188,10 +194,10 @@
                 controls
                 paused
               ></video>
-              <div class="flex items-center justify-between gap-4">
+              <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <h2
-                  :class="`${user?.unsafeMetadata?.group_id === media.group_id ? 'focus:outline-none hover:bg-gray-200 focus:bg-gray-200' : ''} text-2xl focus:outline-none p-4 rounded-xl flex-1`"
-                  :contenteditable="user?.unsafeMetadata?.group_id === media.group_id"
+                  :class="`${user?.unsafeMetadata?.group_id === media?.group_id ? 'focus:outline-none hover:bg-gray-200 focus:bg-gray-200' : ''} text-2xl focus:outline-none p-4 rounded-xl flex-1`"
+                  :contenteditable="user?.unsafeMetadata?.group_id === media?.group_id"
                   x-data="{ title: null }"
                   x-init="$watch('media', () => title = media?.keyvalues?.title ? media?.keyvalues?.title : `Untitled video from ${media?.created_at}`)"
                   x-text="title"
@@ -210,7 +216,7 @@
                 </button>
                 <button
                   x-cloak
-                  :class="user?.unsafeMetadata?.group_id === media.group_id ? `bg-gray-300 py-2 px-4 rounded-xl border-2 border-black shadow-flat hover:shadow-none transition duration-200 hover:bg-red-200` : `hidden`"
+                  :class="user?.unsafeMetadata?.group_id === media?.group_id ? `bg-gray-300 py-2 px-4 rounded-xl border-2 border-black shadow-flat hover:shadow-none transition duration-200 hover:bg-red-200` : `hidden`"
                   @click="deleteMedia($router.params.id, $router)"
                 >
                   Delete
