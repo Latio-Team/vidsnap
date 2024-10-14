@@ -37,7 +37,7 @@
     ></script>
   </head>
   <body
-    x-router
+    class="bg-blue-400"
     x-data="application"
     @load.window="[user, auth] = await initAuth()"
   >
@@ -65,7 +65,7 @@
           </a>
         </div>
         <button
-          :class="`hidden md:inline-flex py-2 px-3 rounded-xl bg-red-200 border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 items-center gap-2 ${isLoading ? 'cursor-wait' : ''}`"
+          :class="`hidden md:inline-flex py-2 px-3 rounded-xl bg-red-300 border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 items-center gap-2 ${isLoading ? 'cursor-wait' : ''}`"
           @click="startRecording"
           :disabled="isLoading"
         >
@@ -89,7 +89,7 @@
           <summary role="button" class="list-none">
             <img
               class="rounded-full border-2 border-black"
-              :src="user?.hasImage ? user.imageUrl : `https://api.dicebear.com/9.x/thumbs/svg?seed=${user?.id}`"
+              :src="user?.hasImage ? user.imageUrl : `https://api.dicebear.com/9.x/glass/svg?seed=${user?.id}`"
               alt="User Avatar"
               width="50"
               height="50"
@@ -136,7 +136,7 @@
                 Private Effortless Screen Recording App
               </h1>
               <button
-                :class="`py-3 px-6 rounded-xl bg-red-200 text-2xl border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 inline-flex items-center gap-4 ${isLoading ? 'cursor-wait' : ''}`"
+                :class="`py-3 px-6 rounded-xl bg-red-300 text-2xl border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 inline-flex items-center gap-4 ${isLoading ? 'cursor-wait' : ''}`"
                 @click="startRecording"
                 :disabled="isLoading"
               >
