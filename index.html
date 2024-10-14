@@ -46,7 +46,7 @@
         class="flex items-center justify-between bg-white max-w-7xl border-2 border-black p-4 md:p-8 rounded-2xl mx-auto gap-4"
       >
         <div class="flex-1">
-          <a class="text-xl inline-flex items-center gap-2" x-link href="/">
+          <a class="text-xl inline-flex items-center gap-2" href="/">
             <svg
               width="23"
               height="24"
@@ -66,7 +66,7 @@
         </div>
         <button
           :class="`hidden md:inline-flex py-2 px-3 rounded-xl bg-red-200 border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 items-center gap-2 ${isLoading ? 'cursor-wait' : ''}`"
-          @click="startRecording($router)"
+          @click="startRecording"
           :disabled="isLoading"
         >
           <i
@@ -137,7 +137,7 @@
               </h1>
               <button
                 :class="`py-3 px-6 rounded-xl bg-red-200 text-2xl border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 inline-flex items-center gap-4 ${isLoading ? 'cursor-wait' : ''}`"
-                @click="startRecording($router)"
+                @click="startRecording"
                 :disabled="isLoading"
               >
                 <i
@@ -217,7 +217,7 @@
                 <button
                   x-cloak
                   :class="user?.unsafeMetadata?.group_id === media?.group_id ? `bg-gray-300 py-2 px-4 rounded-xl border-2 border-black shadow-flat hover:shadow-none transition duration-200 hover:bg-red-200` : `hidden`"
-                  @click="deleteMedia($router.params.id, $router)"
+                  @click="deleteMedia($router.params.id)"
                 >
                   Delete
                 </button>

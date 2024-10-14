@@ -10,7 +10,7 @@ document.addEventListener('alpine:init', () => {
     recordedChunks: [],
     /** @type {MediaRecorder} */
     mediaRecorder: null,
-    async startRecording($router) {
+    async startRecording() {
       if (this.isRecording) {
         this.isLoading = true;
         this.mediaRecorder.stop();
@@ -41,7 +41,7 @@ document.addEventListener('alpine:init', () => {
 
         this.isLoading = false;
         const url = `/v/${res.id}`;
-        $router.push(url);
+        window.location = url
       } catch (error) {
         console.error('Error:', error);
       }
@@ -100,22 +100,21 @@ document.addEventListener('alpine:init', () => {
         console.error(error);
       }
     },
-    async deleteMedia(id, $router) {
+    async deleteMedia(id) {
       if (!this.user?.id) return;
       if (!confirm(`Delete this media recording?`)) {
         return;
       }
       try {
-        const req = await fetch(`/api/file`, {
+        await fetch(`/api/file`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ id }),
         });
-        if (!req.ok) {
-          $router.push(`/`);
-        }
+
+        window.location = '/'
       } catch (error) {
         console.error(error);
       }
