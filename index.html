@@ -7,13 +7,13 @@
     <title>VidSnap - Private Effortless Screen Recording App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="dns-prefetch" href="https://unpkg.com/" />
-    <link rel="stylesheet" href="https://unpkg.com/@fontsource/geist-sans" />
+    <link rel="stylesheet" href="https://unpkg.com/@fontsource/luckiest-guy" />
     <script src="https://unpkg.com/alpinejs@3.x.x" defer></script>
     <script src="https://unpkg.com/@shaun/alpinejs-router@1.x.x"></script>
     <style type="text/tailwindcss">
       @layer base {
         body {
-          font-family: 'Geist Sans', Verdana, Geneva, Tahoma, sans-serif;
+          font-family: 'Luckiest Guy', Verdana, Geneva, Tahoma, sans-serif;
         }
         [x-cloak] {
           display: none !important;
@@ -94,7 +94,7 @@
             <span class="sr-only">Auth Options</span>
           </summary>
           <div
-            class="absolute w-40 right-0 mt-2 bg-white border-2 border-black py-2 rounded-xl flex flex-col"
+            class="absolute w-52 right-0 mt-2 bg-white border-2 border-black py-2 rounded-xl flex flex-col"
           >
             <button
               class="py-2 px-3 hover:bg-gray-200 text-right"
@@ -128,12 +128,12 @@
             <div class="flex flex-col gap-8 items-center max-w-4xl text-center">
               <h1
                 class="text-7xl"
-                x-text="isRecording ? `We're now recording your screen!` : `Private Effortless Screen Recording App`"
+                x-text="isRecording ? `We're now recording your screen!` : isLoading ? `We're preparing your recording` : `Private Effortless Screen Recording App`"
               >
                 Private Effortless Screen Recording App
               </h1>
               <button
-                class="py-3 px-6 rounded-xl bg-red-200 text-2xl border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 inline-flex items-center gap-4"
+                :class="`py-3 px-6 rounded-xl bg-red-200 text-2xl border-2 border-black shadow-flat hover:shadow-none transition-shadow duration-300 inline-flex items-center gap-4 ${isLoading ? 'cursor-wait' : ''}`"
                 @click="startRecording($router)"
               >
                 <i
@@ -142,7 +142,7 @@
                   :class="isRecording ? `w-3 h-3 rounded-full bg-red-600 animate-pulse block`:`hidden`"
                 ></i>
                 <span
-                  x-text="isRecording ? `Stop Recording`: `Start Recording`"
+                  x-text="isRecording ? `Stop Recording`: isLoading ? `Wait a moment` : `Start Recording`"
                 >
                   Start Recording
                 </span>
@@ -165,6 +165,7 @@
                       :src="`/api/video?cid=${file.cid}`"
                       paused
                     ></video>
+                    <span x-text="file?.keyvalues?.title ? file?.keyvalues?.title : `Untitled video from ${file?.created_at}`"></span>
                   </a>
                 </template>
               </div>
@@ -189,7 +190,7 @@
               ></video>
               <div class="flex items-center justify-between gap-4">
                 <h2
-                  :class="user?.unsafeMetadata?.group_id === media.group_id ? `text-2xl focus:outline-none hover:bg-gray-200 focus:bg-gray-200 p-4 rounded-xl flex-1` : `text-2xl focus:outline-none p-4 flex-1`"
+                  :class="`${user?.unsafeMetadata?.group_id === media.group_id ? 'focus:outline-none hover:bg-gray-200 focus:bg-gray-200' : ''} text-2xl focus:outline-none p-4 rounded-xl flex-1`"
                   :contenteditable="user?.unsafeMetadata?.group_id === media.group_id"
                   x-data="{ title: null }"
                   x-init="$watch('media', () => title = media?.keyvalues?.title ? media?.keyvalues?.title : `Untitled video from ${media?.created_at}`)"

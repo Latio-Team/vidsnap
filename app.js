@@ -4,6 +4,7 @@ document.addEventListener('alpine:init', () => {
     user: null,
     auth: null,
     isRecording: false,
+    isLoading: false,
     /** @type {MediaStream} */
     stream: null,
     recordedChunks: [],
@@ -11,6 +12,7 @@ document.addEventListener('alpine:init', () => {
     mediaRecorder: null,
     async startRecording($router) {
       if (this.isRecording) {
+        this.isLoading = true;
         this.mediaRecorder.stop();
         this.stream.getTracks().forEach((track) => track.stop());
         this.isRecording = this.stream.active;
@@ -37,6 +39,7 @@ document.addEventListener('alpine:init', () => {
           console.error(res);
         }
 
+        this.isLoading = false;
         const url = `/v/${res.id}`;
         $router.push(url);
       } catch (error) {
